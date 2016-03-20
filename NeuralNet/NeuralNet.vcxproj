@@ -142,12 +142,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="csvRead.cpp" />
+    <ClCompile Include="FileReader.cpp" />
+    <ClCompile Include="Image.cpp" />
+    <ClCompile Include="ImageSet.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActivationTypes.h" />
-    <ClInclude Include="csvRead.h" />
+    <ClInclude Include="FileReader.h" />
+    <ClInclude Include="Image.h" />
+    <ClInclude Include="ImageSet.h" />
     <ClInclude Include="NeuralNet.h" />
     <ClInclude Include="Neuron.h" />
   </ItemGroup>

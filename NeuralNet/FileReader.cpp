@@ -13,7 +13,7 @@ void MINSTFileReader::read_mnist_images()
 		return ((int)c1 << 24) + ((int)c2 << 16) + ((int)c3 << 8) + c4;
 	};
 
-	ifstream file(this->images_file_path);
+	ifstream file(this->images_file_path, ios::binary);
 
 	if (file.is_open()) {
 		int magic_number = 0;
@@ -32,7 +32,9 @@ void MINSTFileReader::read_mnist_images()
 		this->images_data = new uchar*[this->images_count];
 		for (int i = 0; i < this->images_count; i++) {
 			this->images_data[i] = new uchar[this->image_size];
-			file.read((char *)this->images_data[i], this->image_size);
+			char * data = new char[this->image_size];
+			file.read(data, this->image_size);
+			this->images_data[i] = reinterpret_cast<unsigned char *>(data);
 		}
 	}
 	else {
@@ -81,7 +83,7 @@ ImageSet MINSTFileReader::get_images(int ogranicznik) {
 		for (int j = 0; j < this->sizex; j++) {
 			vector<uchar> temporary;
 			for (int k = 0; k < this->sizey; k++) {
-				temporary.push_back(this->images_data[i][j*this->sizex + k]);
+				temporary.push_back(this->images_data[i][j*this->sizey + k]);
 			}
 			data.push_back(temporary);
 		}

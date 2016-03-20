@@ -28,8 +28,8 @@ public:
 		GetCurrentDirectory(255, buffer);
 		wstring ws(buffer);
 		string path(ws.begin(), ws.end());
-		images_file_path = path + "\\resources\\train-images.idx";
-		labels_file_path = path + "\\resources\\train-labels.idx";
+		images_file_path = path + "\\resources\\train-images.idx3-ubyte";
+		labels_file_path = path + "\\resources\\train-labels.idx1-ubyte";
 	}
 
 	MINSTFileReader(string labels_file_relative_path, string images_file_realtive_path) {
@@ -47,4 +47,8 @@ public:
 
 	//mo¿na se rêcznie ograniczyæ set
 	ImageSet get_images(int ogranicznik = 0);
+
+	uchar * get_buffer(int i) {
+		return this->images_data[i];
+	}
 };

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <Windows.h>
 #include "ImageSet.h"
+#include "NeuralNet.h"
 
 typedef unsigned char uchar;
 
@@ -51,4 +52,8 @@ public:
 	uchar * get_buffer(int i) {
 		return this->images_data[i];
 	}
+
+	void write_neural_network_to_file(NeuralNetwork neural_network);
+
+	NeuralNetwork read_neural_network_from_file();
 };

@@ -4,7 +4,8 @@
 #include "ActivationTypes.h"
 #include <math.h>
 #include <cstdlib>
-#include <time.h>
+//#include <time.h>
+#include <ctime>
 
 using namespace std;
 
@@ -18,7 +19,7 @@ public:
 
 	Input()
 	{
-		srand(time(NULL));
+		//srand(clock());
 		inputWeight= (((rand() % 1000000L) / 1700.0) - 9.8)*0.0015;
 	}
 
@@ -26,7 +27,7 @@ public:
 	{
 		inputSignal = signal;
 
-		srand(time(NULL));
+		//srand(clock());
 		inputWeight = (((rand() % 1000000L) / 1700.0) - 9.8)*0.0015;
 	}
 

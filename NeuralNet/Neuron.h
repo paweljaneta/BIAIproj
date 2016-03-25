@@ -6,6 +6,7 @@
 #include <cstdlib>
 //#include <time.h>
 #include <ctime>
+#include <string>
 
 using namespace std;
 
@@ -352,6 +353,11 @@ public:
 	double getOutputValue()
 	{
 		return outputValue;
+	}
+
+	void setInput(int index, double value)
+	{
+		inputVector[index].setInputSignal(value);
 	}
 
 	string toString() {

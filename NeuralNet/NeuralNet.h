@@ -5,10 +5,12 @@
 
 using namespace std;
 
+double outputTreshold = 0.95;
+
 class NeuralNetwork
 {
 private:
-	
+
 	vector<Neuron> inputLayer;
 	vector<Neuron> outputLayer;
 
@@ -20,13 +22,13 @@ private:
 
 	int output;
 
-	double outputTreshold;
+	//double outputTreshold;
 
 	ActivationType activationType;
-	
+
 public:
 
-	NeuralNetwork(int inputNeuronsNumber,int numberOfInputs, int outputNeuronsNumber,ActivationType actType, double learnRatio)
+	NeuralNetwork(int inputNeuronsNumber, int numberOfInputs, int outputNeuronsNumber, ActivationType actType, double learnRatio)
 	{
 		srand(clock());
 		for (int i = 0; i < inputNeuronsNumber; i++)
@@ -53,7 +55,7 @@ public:
 		activationType = actType;
 	}
 
-	NeuralNetwork(int inputNeuronsNumber, int numberOfInputs, int hiddenLayer1NeuronsNumber , int outputNeuronsNumber, ActivationType actType, double learnRatio)
+	NeuralNetwork(int inputNeuronsNumber, int numberOfInputs, int hiddenLayer1NeuronsNumber, int outputNeuronsNumber, ActivationType actType, double learnRatio)
 	{
 		srand(clock());
 
@@ -212,7 +214,7 @@ public:
 		//get activation type
 	}
 
-	NeuralNetwork(vector<Neuron> inputLayer,vector<Neuron> hiddenLayer1 , vector<Neuron> outputLayer)
+	NeuralNetwork(vector<Neuron> inputLayer, vector<Neuron> hiddenLayer1, vector<Neuron> outputLayer)
 	{
 
 		hiddenLayersNumber = 1;
@@ -267,7 +269,7 @@ public:
 		{
 			for (int x = 0; x < inputImage.get_sizex(); x++)
 			{
-				inputLayer[x + y].setInput(1, inputImage.get_pixel_value(x, y));
+				inputLayer[y*inputImage.get_sizex()+x].setInput(1, inputImage.get_pixel_value(x, y));
 			}
 		}
 
@@ -277,19 +279,162 @@ public:
 			inputLayer[i].work();
 		}
 
-		if (hiddenLayersNumber > 0)
+		if (hiddenLayersNumber == 0)
 		{
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				for (int j = 0; j < inputLayer.size(); j++)
+				{
+					outputLayer[i].setInput(j + 1, inputLayer[j].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				outputLayer[i].work();
+			}
+
+			output = outputToNumber();
 
 		}
 
-		if (hiddenLayersNumber > 1)
+		if (hiddenLayersNumber == 1)
 		{
+			for (int j = 0; j < hiddenLayer1.size(); j++)
+			{
+				for (int i = 0; i < inputLayer.size(); i++)
+				{
+					hiddenLayer1[j].setInput(i + 1, inputLayer[i].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < hiddenLayer1.size(); i++)
+			{
+				hiddenLayer1[i].work();
+			}
+
+
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				for (int j = 0; j < hiddenLayer1.size(); j++)
+				{
+					outputLayer[i].setInput(j + 1, hiddenLayer1[j].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				outputLayer[i].work();
+			}
+
+			output = outputToNumber();
 
 		}
 
-		if (hiddenLayersNumber > 2)
-		{
 
+
+		if (hiddenLayersNumber == 2)
+		{
+			for (int j = 0; j < hiddenLayer1.size(); j++)
+			{
+				for (int i = 0; i < inputLayer.size(); i++)
+				{
+					hiddenLayer1[j].setInput(i + 1, inputLayer[i].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < hiddenLayer1.size(); i++)
+			{
+				hiddenLayer1[i].work();
+			}
+
+			for (int j = 0; j < hiddenLayer2.size(); j++)
+			{
+				for (int i = 0; i < hiddenLayer1.size(); i++)
+				{
+					hiddenLayer2[j].setInput(i + 1, hiddenLayer1[i].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < hiddenLayer2.size(); i++)
+			{
+				hiddenLayer2[i].work();
+			}
+
+
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				for (int j = 0; j < hiddenLayer2.size(); j++)
+				{
+					outputLayer[i].setInput(j + 1, hiddenLayer2[j].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				outputLayer[i].work();
+			}
+
+			output = outputToNumber();
+
+		}
+
+		if (hiddenLayersNumber == 3)
+		{
+			for (int j = 0; j < hiddenLayer1.size(); j++)
+			{
+				for (int i = 0; i < inputLayer.size(); i++)
+				{
+					hiddenLayer1[j].setInput(i + 1, inputLayer[i].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < hiddenLayer1.size(); i++)
+			{
+				hiddenLayer1[i].work();
+			}
+
+			for (int j = 0; j < hiddenLayer2.size(); j++)
+			{
+				for (int i = 0; i < hiddenLayer1.size(); i++)
+				{
+					hiddenLayer2[j].setInput(i + 1, hiddenLayer1[i].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < hiddenLayer2.size(); i++)
+			{
+				hiddenLayer2[i].work();
+			}
+
+			for (int j = 0; j < hiddenLayer3.size(); j++)
+			{
+				for (int i = 0; i < hiddenLayer2.size(); i++)
+				{
+					hiddenLayer3[j].setInput(i + 1, hiddenLayer2[i].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < hiddenLayer3.size(); i++)
+			{
+				hiddenLayer3[i].work();
+			}
+
+
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				for (int j = 0; j < hiddenLayer3.size(); j++)
+				{
+					outputLayer[i].setInput(j + 1, hiddenLayer3[j].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				outputLayer[i].work();
+			}
+
+			output = outputToNumber();
 		}
 
 
@@ -306,7 +451,7 @@ public:
 			else
 				temp.push_back(-0.95);
 		}
-		
+
 		temp.push_back(0.95);
 
 		for (int i = 0; i < 9 - number; i++)
@@ -318,7 +463,7 @@ public:
 					temp.push_back(-0.95);
 			}
 		}
-			
+
 		return temp;
 	}
 
@@ -335,7 +480,7 @@ public:
 			str += inputLayer[i].toString();
 		}
 		str += "outputLayer\n";
-		str += to_string(outputLayer.size())+ "\n";
+		str += to_string(outputLayer.size()) + "\n";
 		for (int i = 0; i < outputLayer.size(); i++) {
 			str += outputLayer[i].toString();
 		}
@@ -375,7 +520,7 @@ public:
 			for (int i = 0; i < hiddenLayer3.size(); i++) {
 				str += hiddenLayer3[i].toString();
 			}
-			
+
 		}
 		return str;
 	}
@@ -426,7 +571,7 @@ public:
 				Neuron n = Neuron::fromString(str);
 				hidden_layer_2.push_back(n);
 			}
-			return NeuralNetwork(input_layer, hidden_layer_1,hidden_layer_2, output_layer);
+			return NeuralNetwork(input_layer, hidden_layer_1, hidden_layer_2, output_layer);
 		}
 		else {
 			index = str.find_first_of("hiddenLayer1\n") + 14;
@@ -455,7 +600,7 @@ public:
 			}
 			return NeuralNetwork(input_layer, hidden_layer_1, hidden_layer_2, output_layer);
 		}
-		
+
 	}
 
 };

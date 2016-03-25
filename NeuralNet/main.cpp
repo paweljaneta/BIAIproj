@@ -87,7 +87,7 @@ int main() {
 	} catch(runtime_error e){
 		cout << e.what() << endl;
 	}
-	ImageSet set = reader.get_images(1000);
+	ImageSet set = reader.get_images(10);
 	//for (int i = 0; i < 20; i++) {
 	//	string name = "Wynik" + to_string(i);
 	//	name += ".bmp";
@@ -96,6 +96,7 @@ int main() {
 
 	NeuralNetwork siec(784, 1, 89, 10, ActivationType::unipolarSigmoidal, 0.7);
 
+	siec.work(set.get_image_from_list(1));
 
 	cout << "test" << endl;
 	system("pause");

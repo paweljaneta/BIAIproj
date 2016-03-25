@@ -1,7 +1,10 @@
 #pragma once
+
 #include <vector>
 #include "ActivationTypes.h"
 #include <math.h>
+#include <cstdlib>
+#include <time.h>
 
 using namespace std;
 
@@ -15,13 +18,15 @@ public:
 
 	Input()
 	{
-
+		srand(time(NULL));
+		inputWeight= (((rand() % 1000000L) / 1700.0) - 9.8)*0.0015;
 	}
 
 	Input(double signal, double weight)
 	{
 		inputSignal = signal;
 		inputWeight = weight;
+
 	}
 
 	~Input()
@@ -39,6 +44,8 @@ public:
 	{
 		inputSignal = signal;
 	}
+	
+
 
 	double getInputWeight()
 	{
@@ -49,6 +56,8 @@ public:
 	{
 		return inputSignal;
 	}
+
+
 
 	double getSigMulWeight()
 	{
@@ -64,14 +73,13 @@ private:
 	vector<Input> inputVector;
 	ActivationType activationType;
 
-	double alfa;
-	double beta;
-
-	bool alfaSet;
-	bool betaSet;
+	double learnSpeed;
 
 	double sum;
 	double outputValue;
+
+	double delta;
+
 
 	void calculateSum()
 	{
@@ -120,21 +128,20 @@ private:
 
 	void unipolarSigmoidalActivation()
 	{
-		if(betaSet)
-		outputValue = 1.0 / (1.0 + exp(-beta*sum));
+		outputValue = 1.0 / (1.0 + exp(-learnSpeed*sum));
 	}
 
 	void bipolarSigmoidalActivation()
 	{
-		if(betaSet)
-		outputValue = 2.0 / (1.0 + exp(-beta*sum)) - 1.0;
+		outputValue = 2.0 / (1.0 + exp(-learnSpeed*sum)) - 1.0;
 	}
 
 	void tanhActivation()
 	{
-		if (alfaSet)
-			outputValue = (1.0 - exp(-alfa*sum)) / (1.0 + exp(-alfa*sum));
+			//outputValue = (1.0 - exp(-learnSpeed*sum)) / (1.0 + exp(-learnSpeed*sum));
+		outputValue = tanh(sum);
 	}
+
 
 	void activation()
 	{
@@ -164,26 +171,112 @@ private:
 	}
 
 
+	void linearUpdate()
+	{
+		for (int i = 0; i < inputVector.size(); i++) 
+		{
+			inputVector[i].setInputWeight(inputVector[i].getInputWeight()+learnSpeed*delta*inputVector[i].getInputSignal());
+		}
+	}
+
+	void cutLinearUpdate()
+	{
+		for (int i = 0; i < inputVector.size(); i++)
+		{
+			if (!(outputValue >= 1 || outputValue <= -1))
+			{
+				inputVector[i].setInputWeight(inputVector[i].getInputWeight() + learnSpeed*delta*inputVector[i].getInputSignal());
+			}
+		}
+	}
+
+	void unipolarEdgeUpdate()
+	{
+		for (int i = 0; i < inputVector.size(); i++)
+		{
+			
+		}
+	}
+
+	void bipolarEdgeUpdate()
+	{
+		for (int i = 0; i < inputVector.size(); i++)
+		{
+
+		}
+	}
+
+	void unipolarSigmoidalUpdate()
+	{
+		for (int i = 0; i < inputVector.size(); i++)
+		{
+			inputVector[i].setInputWeight(inputVector[i].getInputWeight() + learnSpeed*delta*inputVector[i].getInputSignal()*(outputValue*(1.0 - outputValue)));
+		}
+	}
+
+	void bipolarSigmoidalUpdate()
+	{
+		for (int i = 0; i < inputVector.size(); i++)
+		{
+			inputVector[i].setInputWeight(inputVector[i].getInputWeight() + learnSpeed*delta*inputVector[i].getInputSignal()*((1.0 - outputValue *outputValue) / 2.0));
+		}
+	}
+
+	void tanhUpdate()
+	{
+		for (int i = 0; i < inputVector.size(); i++)
+		{
+			inputVector[i].setInputWeight(inputVector[i].getInputWeight() + learnSpeed*delta*inputVector[i].getInputSignal()*(1-tanh(sum)*tanh(sum)));
+		}
+	}
+
+	void update()
+	{
+		switch (activationType) {
+		case ActivationType::linear:
+			linearUpdate();
+			break;
+		case ActivationType::cutLinear:
+			cutLinearUpdate();
+			break;
+		case ActivationType::unipolarEdge:
+			unipolarEdgeUpdate();
+			break;
+		case ActivationType::bipolarEdge:
+			bipolarEdgeUpdate();
+			break;
+		case ActivationType::unipolarSigmoidal:
+			unipolarSigmoidalUpdate();
+			break;
+		case ActivationType::bipolarSigmoidal:
+			bipolarSigmoidalUpdate();
+			break;
+		case ActivationType::tanh:
+			tanhUpdate();
+			break;
+		}
+	}
 public:
 
-	//dodaæ alfa, beta
 	Neuron()
 	{
 	}
 
-	Neuron(vector<Input> inVect, ActivationType actType)
+	Neuron(vector<Input> inVect, ActivationType actType,double learnRatio)
 	{
 		inputVector = inVect;
 		activationType = actType;
+		learnSpeed = learnRatio;
 	}
 
-	Neuron(vector<pair<double, double>> inVect, ActivationType actType) //pair of signal,weight
+	Neuron(vector<pair<double, double>> inVect, ActivationType actType, double learnRatio) //pair of signal,weight
 	{
 		for (int i = 0; i < inVect.size(); i++) {
 			inputVector.push_back(Input(inVect[i].first, inVect[i].second));
 		}
 
 		activationType = actType;
+		learnSpeed = learnRatio;
 	}
 
 	~Neuron()
@@ -194,6 +287,26 @@ public:
 	{
 		calculateSum();
 		activation();
+	}
+
+	void updateWeights()
+	{
+		update();
+	}
+
+	void setDelta(double d)
+	{
+		delta = d;
+	}
+
+	double getDelta()
+	{
+		return delta;
+	}
+
+	double getDeltaMulWeight(int index)
+	{
+		return delta*inputVector[index].getInputWeight();
 	}
 
 	double getOutputValue()

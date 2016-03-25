@@ -58,7 +58,7 @@ bool SaveBMP(uchar * buffer, int width, int height, long paddedsize, LPCTSTR bmp
 		CloseHandle(file);
 		return false;
 	}
-	for (int i = 0; i < bitmapFileInfo.biHeight; i++) {
+	for (int i = bitmapFileInfo.biHeight-1; i >=0 ; i--) {
 		for (int j = 0; j < bitmapFileInfo.biWidth; j++)
 		{
 			int index = i*bitmapFileInfo.biWidth + j;

@@ -6,6 +6,7 @@
 #include <cstdlib>
 //#include <time.h>
 #include <ctime>
+#include <string>
 
 using namespace std;
 
@@ -81,14 +82,14 @@ public:
 
 
 	string toString() {
-		string str = to_string(this->inputSignal) + " ";
+		string str = to_string(1.0) + " ";
 		str += to_string(this->inputWeight) + "\n";
 		return str;
 	}
 
 	static Input fromString(string str) {
-		string input_signal_str = str.substr(0, str.find_first_of(" ", 0));
-		string input_weight_str = str.substr(str.find_first_of(" ", 0), str.length());
+		string input_signal_str = str.substr(0, str.find(" ", 0));
+		string input_weight_str = str.substr(str.find(" ", 0), str.length());
 		double input_signal = stod(input_signal_str);
 		double input_weight = stod(input_weight_str);
 		return Input(input_signal, input_weight);
@@ -363,34 +364,36 @@ public:
 		int type = to_underlying(this->activationType);
 		str += to_string(type) + " ";
 		str += to_string(this->learnSpeed) + " ";
-		str += to_string(this->sum) + " ";
-		str += to_string(this->outputValue)+ " ";
-		str += to_string(this->delta)+ "\n";
+		str += to_string(0.0) + " ";
+		str += to_string(0.0)+ " ";
+		str += to_string(0.0)+ "\n";
 		return str;
 	}
 
 	static Neuron fromString(string &str) {
-		int index = str.find_first_of("Input", 0);
-		index += 6;
-		int input_size = stoi(str.substr(index, str.find_first_of("\n", index)));
-		index += str.find_first_of("\n", index);
+		int index = str.find("Input", 0);
+		index += 5;
+		int input_size = stoi(str.substr(index, str.find("\n", index)));
+		str = str.substr(str.find("\n", index)+1, str.length());
+		index = str.find("\n", 0);
 		vector<Input> input_vector;
-		str = str.substr(index, str.length());
+		str = str.substr(index+1, str.length());
 		for (int i = 0; i < input_size; i++) {
-			Input in = Input::fromString(str.substr(0, str.find_first_of("\n", 0)));
+			Input in = Input::fromString(str.substr(0, str.find("\n", 0)));
 			input_vector.push_back(in);
-			str = str.substr(str.find_first_of("\n", str.length()));
+			index = str.find("\n", 0);
+			str = str.substr(index+1, str.length());
 		}
-		string activation_type_string = str.substr(0, str.find_first_of(" ", 0));
-		str = str.substr(str.find_first_of(" "), str.length());
-		string learn_speed_string = str.substr(0, str.find_first_of(" ", 0));
-		str = str.substr(str.find_first_of(" "), str.length());
-		string sum_string = str.substr(0, str.find_first_of(" ", 0));
-		str = str.substr(str.find_first_of(" "), str.length());
-		string output_value_string = str.substr(0, str.find_first_of(" ", 0));
-		str = str.substr(str.find_first_of(" "), str.length());
-		string delta_string = str.substr(0, str.find_first_of("\n", 0));
-		str = str.substr(str.find_first_of("\n"), str.length());
+		string activation_type_string = str.substr(0, str.find(" ", 0));
+		str = str.substr(str.find(" ")+1, str.length());
+		string learn_speed_string = str.substr(0, str.find(" ", 0));
+		str = str.substr(str.find(" ")+1, str.length());
+		string sum_string = str.substr(0, str.find(" ", 0));
+		str = str.substr(str.find(" ")+1, str.length());
+		string output_value_string = str.substr(0, str.find(" ", 0));
+		str = str.substr(str.find(" ")+1, str.length());
+		string delta_string = str.substr(0, str.find("\n", 0));
+		str = str.substr(str.find("\n")+1, str.length());
 		int activation_type = stoi(activation_type_string);
 		double learn_speed = stod(learn_speed_string);
 		double sum = stod(sum_string);

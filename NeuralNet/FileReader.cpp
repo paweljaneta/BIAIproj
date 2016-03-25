@@ -99,7 +99,7 @@ void MINSTFileReader::write_neural_network_to_file(NeuralNetwork neural_network)
 	GetCurrentDirectory(255, buffer);
 	wstring ws(buffer);
 	string path(ws.begin(), ws.end());
-	path += "NeuralNetwork.txt";
+	path += "\\NeuralNetwork.txt";
 	ofstream file(path, ios::out);
 	if (file.is_open()) {
 		file << str;
@@ -114,10 +114,13 @@ NeuralNetwork MINSTFileReader::read_neural_network_from_file()
 	GetCurrentDirectory(255, buffer);
 	wstring ws(buffer);
 	string path(ws.begin(), ws.end());
-	path += "NeuralNetwork.txt";
-	ifstream file(path, ios::out);
+	path += "\\NeuralNetwork.txt";
+	ifstream file(path, ios::in);
 	if (file.is_open()) {
-		file >> str;
+		file.seekg(0, ios::end);
+		str.reserve(file.tellg());
+		file.seekg(0, ios::beg);
+		str.assign((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
 		file.close();
 	}
 	return NeuralNetwork::fromString(str);

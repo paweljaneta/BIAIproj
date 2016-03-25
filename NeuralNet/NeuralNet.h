@@ -209,25 +209,36 @@ public:
 	{
 
 		hiddenLayersNumber = 0;
-		//get activation type
+		this->inputLayer = inputLayer;
+		this->outputLayer = outputLayer;
 	}
 
 	NeuralNetwork(vector<Neuron> inputLayer,vector<Neuron> hiddenLayer1 , vector<Neuron> outputLayer)
 	{
-
 		hiddenLayersNumber = 1;
+		this->inputLayer = inputLayer;
+		this->hiddenLayer1 = hiddenLayer1;
+		this->outputLayer = outputLayer;
 	}
 
 	NeuralNetwork(vector<Neuron> inputLayer, vector<Neuron> hiddenLayer1, vector<Neuron> hiddenLayer2, vector<Neuron> outputLayer)
 	{
-
 		hiddenLayersNumber = 2;
+		this->inputLayer = inputLayer;
+		this->hiddenLayer1 = hiddenLayer1;
+		this->hiddenLayer2 = hiddenLayer2;
+		this->outputLayer = outputLayer;
 	}
 
 	NeuralNetwork(vector<Neuron> inputLayer, vector<Neuron> hiddenLayer1, vector<Neuron> hiddenLayer2, vector<Neuron> hiddenLayer3, vector<Neuron> outputLayer)
 	{
 
 		hiddenLayersNumber = 3;
+		this->inputLayer = inputLayer;
+		this->hiddenLayer1 = hiddenLayer1;
+		this->hiddenLayer2 = hiddenLayer2;
+		this->hiddenLayer3 = hiddenLayer3;
+		this->outputLayer = outputLayer;
 	}
 
 	~NeuralNetwork()
@@ -267,7 +278,7 @@ public:
 		{
 			for (int x = 0; x < inputImage.get_sizex(); x++)
 			{
-				inputLayer[x + y].setInput(1, inputImage.get_pixel_value(x, y));
+				//inputLayer[x + y].setInput(1, inputImage.get_pixel_value(x, y));
 			}
 		}
 
@@ -381,27 +392,30 @@ public:
 	}
 
 	static NeuralNetwork fromString(string str) {
-		int index = str.find_first_of("inputLayer\n") + 12;
-		int input_layer_size = stoi(str.substr(index, str.find_first_of("\n", index)));
-		str = str.substr(str.find_first_of("\n"), str.length());
+		int index = str.find("inputLayer\n") + 11;
+		int input_layer_size = stoi(str.substr(index, str.find("\n", index)));
+		index = str.find("\n", index);
+		str = str.substr(index+1, str.length());
 		vector<Neuron> input_layer;
 		for (int i = 0; i < input_layer_size; i++) {
 			Neuron n = Neuron::fromString(str);
 			input_layer.push_back(n);
 		}
-		index = str.find_first_of("outputLayer\n") + 13;
-		int output_layer_size = stoi(str.substr(index, str.find_first_of("\n", index)));
-		str = str.substr(str.find_first_of("\n"), str.length());
+		index = str.find("outputLayer\n") + 12;
+		int output_layer_size = stoi(str.substr(index, str.find("\n", index)));
+		index = str.find("\n", index);
+		str = str.substr(index + 1, str.length());
 		vector<Neuron> output_layer;
 		for (int i = 0; i < output_layer_size; i++) {
 			Neuron n = Neuron::fromString(str);
 			output_layer.push_back(n);
 		}
-		int hidden_layers_number = stoi(str.substr(0, str.find_first_of("\n")));
+		int hidden_layers_number = stoi(str.substr(0, str.find("\n")));
 		if (hidden_layers_number == 1) {
-			index = str.find_first_of("hiddenLayer1\n") + 14;
-			int hidden_layer_1_size = stoi(str.substr(index, str.find_first_of("\n", index)));
-			str = str.substr(str.find_first_of("\n"), str.length());
+			index = str.find("hiddenLayer1\n") + 13;
+			int hidden_layer_1_size = stoi(str.substr(index, str.find("\n", index)));
+			index = str.find("\n", index);
+			str = str.substr(index + 1, str.length());
 			vector<Neuron> hidden_layer_1;
 			for (int i = 0; i < hidden_layer_1_size; i++) {
 				Neuron n = Neuron::fromString(str);
@@ -410,17 +424,19 @@ public:
 			return NeuralNetwork(input_layer, hidden_layer_1, output_layer);
 		}
 		else if (hidden_layers_number == 2) {
-			index = str.find_first_of("hiddenLayer1\n") + 14;
-			int hidden_layer_1_size = stoi(str.substr(index, str.find_first_of("\n", index)));
-			str = str.substr(str.find_first_of("\n"), str.length());
+			index = str.find("hiddenLayer1\n") + 13;
+			int hidden_layer_1_size = stoi(str.substr(index, str.find("\n", index)));
+			index = str.find("\n", index);
+			str = str.substr(index + 1, str.length());
 			vector<Neuron> hidden_layer_1;
 			for (int i = 0; i < hidden_layer_1_size; i++) {
 				Neuron n = Neuron::fromString(str);
 				hidden_layer_1.push_back(n);
 			}
-			index = str.find_first_of("hiddenLayer2\n") + 14;
-			int hidden_layer_2_size = stoi(str.substr(index, str.find_first_of("\n", index)));
-			str = str.substr(str.find_first_of("\n"), str.length());
+			index = str.find("hiddenLayer2\n") + 13;
+			int hidden_layer_2_size = stoi(str.substr(index, str.find("\n", index)));
+			index = str.find("\n", index);
+			str = str.substr(index + 1, str.length());
 			vector<Neuron> hidden_layer_2;
 			for (int i = 0; i < hidden_layer_2_size; i++) {
 				Neuron n = Neuron::fromString(str);
@@ -429,25 +445,28 @@ public:
 			return NeuralNetwork(input_layer, hidden_layer_1,hidden_layer_2, output_layer);
 		}
 		else {
-			index = str.find_first_of("hiddenLayer1\n") + 14;
-			int hidden_layer_1_size = stoi(str.substr(index, str.find_first_of("\n", index)));
-			str = str.substr(str.find_first_of("\n"), str.length());
+			index = str.find("hiddenLayer1\n") + 13;
+			int hidden_layer_1_size = stoi(str.substr(index, str.find("\n", index)));
+			index = str.find("\n", index);
+			str = str.substr(index + 1, str.length());
 			vector<Neuron> hidden_layer_1;
 			for (int i = 0; i < hidden_layer_1_size; i++) {
 				Neuron n = Neuron::fromString(str);
 				hidden_layer_1.push_back(n);
 			}
-			index = str.find_first_of("hiddenLayer2\n") + 14;
-			int hidden_layer_2_size = stoi(str.substr(index, str.find_first_of("\n", index)));
-			str = str.substr(str.find_first_of("\n"), str.length());
+			index = str.find("hiddenLayer2\n") + 13;
+			int hidden_layer_2_size = stoi(str.substr(index, str.find("\n", index)));
+			index = str.find("\n", index);
+			str = str.substr(index + 1, str.length());
 			vector<Neuron> hidden_layer_2;
 			for (int i = 0; i < hidden_layer_2_size; i++) {
 				Neuron n = Neuron::fromString(str);
 				hidden_layer_2.push_back(n);
 			}
-			index = str.find_first_of("hiddenLayer3\n") + 14;
-			int hidden_layer_3_size = stoi(str.substr(index, str.find_first_of("\n", index)));
-			str = str.substr(str.find_first_of("\n"), str.length());
+			index = str.find("hiddenLayer3\n") + 13;
+			int hidden_layer_3_size = stoi(str.substr(index, str.find("\n", index)));
+			index = str.find("\n", index);
+			str = str.substr(index + 1, str.length());
 			vector<Neuron> hidden_layer_3;
 			for (int i = 0; i < hidden_layer_3_size; i++) {
 				Neuron n = Neuron::fromString(str);

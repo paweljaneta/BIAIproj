@@ -2,6 +2,7 @@
 #include <uchar.h>
 #include <iostream>
 #include <Windows.h>
+#include <streambuf>
 #include "ImageSet.h"
 #include "NeuralNet.h"
 

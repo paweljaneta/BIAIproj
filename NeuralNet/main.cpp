@@ -1,4 +1,5 @@
 #include <iostream>
+#include "ImageSet.h"
 #include "FileReader.h"
 #include "NeuralNet.h"
 #include "ActivationTypes.h"
@@ -79,14 +80,14 @@ bool SaveBMP(uchar * buffer, int width, int height, long paddedsize, LPCTSTR bmp
 }
 
 int main() {
-	//MINSTFileReader reader = MINSTFileReader();
-	//try {
-	//	reader.read_mnist_labels();
-	//	reader.read_mnist_images();
-	//} catch(runtime_error e){
-	//	cout << e.what() << endl;
-	//}
-	//ImageSet set = reader.get_images(1000);
+	MINSTFileReader reader = MINSTFileReader();
+	try {
+		reader.read_mnist_labels();
+		reader.read_mnist_images();
+	} catch(runtime_error e){
+		cout << e.what() << endl;
+	}
+	ImageSet set = reader.get_images(1000);
 	//for (int i = 0; i < 20; i++) {
 	//	string name = "Wynik" + to_string(i);
 	//	name += ".bmp";
@@ -94,7 +95,6 @@ int main() {
 	//}
 
 	NeuralNetwork siec(784, 1, 89, 10, ActivationType::unipolarSigmoidal, 0.7);
-
 
 
 	cout << "test" << endl;

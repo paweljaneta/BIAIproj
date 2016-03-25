@@ -4,7 +4,6 @@
 #include "ActivationTypes.h"
 #include <math.h>
 #include <cstdlib>
-//#include <time.h>
 #include <ctime>
 
 using namespace std;
@@ -321,6 +320,11 @@ public:
 	double getOutputValue()
 	{
 		return outputValue;
+	}
+
+	void setInput(int index, double value)
+	{
+		inputVector[index].setInputSignal(value);
 	}
 };
 

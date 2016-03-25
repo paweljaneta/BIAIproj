@@ -91,3 +91,34 @@ ImageSet MINSTFileReader::get_images(int ogranicznik) {
 	}
 	return ImageSet(this->images_count, images);
 }
+
+void MINSTFileReader::write_neural_network_to_file(NeuralNetwork neural_network)
+{
+	string str = neural_network.toString();
+	WCHAR buffer[255];
+	GetCurrentDirectory(255, buffer);
+	wstring ws(buffer);
+	string path(ws.begin(), ws.end());
+	path += "NeuralNetwork.txt";
+	ofstream file(path, ios::out);
+	if (file.is_open()) {
+		file << str;
+		file.close();
+	}
+}
+
+NeuralNetwork MINSTFileReader::read_neural_network_from_file()
+{
+	string str;
+	WCHAR buffer[255];
+	GetCurrentDirectory(255, buffer);
+	wstring ws(buffer);
+	string path(ws.begin(), ws.end());
+	path += "NeuralNetwork.txt";
+	ifstream file(path, ios::out);
+	if (file.is_open()) {
+		file >> str;
+		file.close();
+	}
+	return NeuralNetwork::fromString(str);
+}

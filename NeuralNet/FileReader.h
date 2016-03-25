@@ -1,3 +1,5 @@
+#pragma once
+
 #include <fstream>
 #include <uchar.h>
 #include <iostream>

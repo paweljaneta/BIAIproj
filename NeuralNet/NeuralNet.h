@@ -5,7 +5,7 @@
 
 using namespace std;
 
-double outputTreshold = 0.95;
+static double outputTreshold = 0.95;
 
 class NeuralNetwork
 {

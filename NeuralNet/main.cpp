@@ -1,7 +1,8 @@
 #include <iostream>
 #include "ImageSet.h"
-#include "FileReader.h"
 #include "NeuralNet.h"
+#include "FileReader.h"
+
 #include "ActivationTypes.h"
 #include <Windows.h>
 #include <string>

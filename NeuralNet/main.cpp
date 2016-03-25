@@ -1,5 +1,7 @@
 #include <iostream>
 #include "FileReader.h"
+#include "NeuralNet.h"
+#include "ActivationTypes.h"
 #include <Windows.h>
 #include <string>
 
@@ -58,7 +60,7 @@ bool SaveBMP(uchar * buffer, int width, int height, long paddedsize, LPCTSTR bmp
 		CloseHandle(file);
 		return false;
 	}
-	for (int i = 0; i < bitmapFileInfo.biHeight; i++) {
+	for (int i = bitmapFileInfo.biHeight - 1; i >= 0; i--) {
 		for (int j = 0; j < bitmapFileInfo.biWidth; j++)
 		{
 			int index = i*bitmapFileInfo.biWidth + j;
@@ -66,7 +68,7 @@ bool SaveBMP(uchar * buffer, int width, int height, long paddedsize, LPCTSTR bmp
 			WriteFile(file, &buffer[index], 1, &bwritten, NULL);
 			WriteFile(file, &buffer[index], 1, &bwritten, NULL);
 		} //dla szerokosci niepodzielnej przez 4 trzeba dopelniæ zapis czarnym
-		for (int i = 0; i<width % 4; i++)
+		for (int i = 0; i < width % 4; i++)
 		{
 			unsigned char buf = 0;
 			WriteFile(file, &buf, 1, &bwritten, NULL);
@@ -77,20 +79,25 @@ bool SaveBMP(uchar * buffer, int width, int height, long paddedsize, LPCTSTR bmp
 }
 
 int main() {
-	MINSTFileReader reader = MINSTFileReader();
-	try {
-		reader.read_mnist_labels();
-		reader.read_mnist_images();
-	} catch(runtime_error e){
-		cout << e.what() << endl;
-	}
-	ImageSet set = reader.get_images(1000);
-	for (int i = 0; i < 20; i++) {
-		string name = "Wynik" + to_string(i);
-		name += ".bmp";
-		SaveBMP(reader.get_buffer(i), 28, 28, 0, convertCharArrayToLPCWSTR(name.c_str()));
-	}
-	cout << "test" <<endl;
+	//MINSTFileReader reader = MINSTFileReader();
+	//try {
+	//	reader.read_mnist_labels();
+	//	reader.read_mnist_images();
+	//} catch(runtime_error e){
+	//	cout << e.what() << endl;
+	//}
+	//ImageSet set = reader.get_images(1000);
+	//for (int i = 0; i < 20; i++) {
+	//	string name = "Wynik" + to_string(i);
+	//	name += ".bmp";
+	//	SaveBMP(reader.get_buffer(i), 28, 28, 0, convertCharArrayToLPCWSTR(name.c_str()));
+	//}
+
+	NeuralNetwork siec(784, 1, 89, 10, ActivationType::unipolarSigmoidal, 0.7);
+
+
+
+	cout << "test" << endl;
 	system("pause");
 	return 0;
 }

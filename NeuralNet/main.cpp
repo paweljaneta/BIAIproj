@@ -95,8 +95,9 @@ int main() {
 	//}
 
 	NeuralNetwork siec(784, 1, 89, 10, ActivationType::unipolarSigmoidal, 0.7);
-
-	siec.work(set.get_image_from_list(1));
+	
+	reader.write_neural_network_to_file(siec);
+	siec = reader.read_neural_network_from_file();
 
 	cout << "test" << endl;
 	system("pause");

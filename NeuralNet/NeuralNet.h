@@ -280,7 +280,7 @@ public:
 		{
 			for (int x = 0; x < inputImage.get_sizex(); x++)
 			{
-				inputLayer[x + y].setInput(1, inputImage.get_pixel_value(x, y));
+				inputLayer[y*inputImage.get_sizex() + x].setInput(1, inputImage.get_pixel_value(x, y));
 			}
 		}
 

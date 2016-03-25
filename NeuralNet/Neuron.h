@@ -22,6 +22,14 @@ public:
 		inputWeight= (((rand() % 1000000L) / 1700.0) - 9.8)*0.0015;
 	}
 
+	Input(double signal)
+	{
+		inputSignal = signal;
+
+		srand(time(NULL));
+		inputWeight = (((rand() % 1000000L) / 1700.0) - 9.8)*0.0015;
+	}
+
 	Input(double signal, double weight)
 	{
 		inputSignal = signal;

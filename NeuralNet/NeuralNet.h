@@ -5,10 +5,12 @@
 
 using namespace std;
 
+double outputTreshold = 0.95;
+
 class NeuralNetwork
 {
 private:
-	
+
 	vector<Neuron> inputLayer;
 	vector<Neuron> outputLayer;
 
@@ -20,13 +22,13 @@ private:
 
 	int output;
 
-	double outputTreshold;
+	//double outputTreshold;
 
 	ActivationType activationType;
-	
+
 public:
 
-	NeuralNetwork(int inputNeuronsNumber,int numberOfInputs, int outputNeuronsNumber,ActivationType actType, double learnRatio)
+	NeuralNetwork(int inputNeuronsNumber, int numberOfInputs, int outputNeuronsNumber, ActivationType actType, double learnRatio)
 	{
 		srand(clock());
 		for (int i = 0; i < inputNeuronsNumber; i++)
@@ -53,7 +55,7 @@ public:
 		activationType = actType;
 	}
 
-	NeuralNetwork(int inputNeuronsNumber, int numberOfInputs, int hiddenLayer1NeuronsNumber , int outputNeuronsNumber, ActivationType actType, double learnRatio)
+	NeuralNetwork(int inputNeuronsNumber, int numberOfInputs, int hiddenLayer1NeuronsNumber, int outputNeuronsNumber, ActivationType actType, double learnRatio)
 	{
 		srand(clock());
 
@@ -209,36 +211,25 @@ public:
 	{
 
 		hiddenLayersNumber = 0;
-		this->inputLayer = inputLayer;
-		this->outputLayer = outputLayer;
+		//get activation type
 	}
 
-	NeuralNetwork(vector<Neuron> inputLayer,vector<Neuron> hiddenLayer1 , vector<Neuron> outputLayer)
+	NeuralNetwork(vector<Neuron> inputLayer, vector<Neuron> hiddenLayer1, vector<Neuron> outputLayer)
 	{
+
 		hiddenLayersNumber = 1;
-		this->inputLayer = inputLayer;
-		this->hiddenLayer1 = hiddenLayer1;
-		this->outputLayer = outputLayer;
 	}
 
 	NeuralNetwork(vector<Neuron> inputLayer, vector<Neuron> hiddenLayer1, vector<Neuron> hiddenLayer2, vector<Neuron> outputLayer)
 	{
+
 		hiddenLayersNumber = 2;
-		this->inputLayer = inputLayer;
-		this->hiddenLayer1 = hiddenLayer1;
-		this->hiddenLayer2 = hiddenLayer2;
-		this->outputLayer = outputLayer;
 	}
 
 	NeuralNetwork(vector<Neuron> inputLayer, vector<Neuron> hiddenLayer1, vector<Neuron> hiddenLayer2, vector<Neuron> hiddenLayer3, vector<Neuron> outputLayer)
 	{
 
 		hiddenLayersNumber = 3;
-		this->inputLayer = inputLayer;
-		this->hiddenLayer1 = hiddenLayer1;
-		this->hiddenLayer2 = hiddenLayer2;
-		this->hiddenLayer3 = hiddenLayer3;
-		this->outputLayer = outputLayer;
 	}
 
 	~NeuralNetwork()
@@ -278,7 +269,7 @@ public:
 		{
 			for (int x = 0; x < inputImage.get_sizex(); x++)
 			{
-				//inputLayer[x + y].setInput(1, inputImage.get_pixel_value(x, y));
+				inputLayer[y*inputImage.get_sizex()+x].setInput(1, inputImage.get_pixel_value(x, y));
 			}
 		}
 
@@ -288,19 +279,162 @@ public:
 			inputLayer[i].work();
 		}
 
-		if (hiddenLayersNumber > 0)
+		if (hiddenLayersNumber == 0)
 		{
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				for (int j = 0; j < inputLayer.size(); j++)
+				{
+					outputLayer[i].setInput(j + 1, inputLayer[j].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				outputLayer[i].work();
+			}
+
+			output = outputToNumber();
 
 		}
 
-		if (hiddenLayersNumber > 1)
+		if (hiddenLayersNumber == 1)
 		{
+			for (int j = 0; j < hiddenLayer1.size(); j++)
+			{
+				for (int i = 0; i < inputLayer.size(); i++)
+				{
+					hiddenLayer1[j].setInput(i + 1, inputLayer[i].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < hiddenLayer1.size(); i++)
+			{
+				hiddenLayer1[i].work();
+			}
+
+
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				for (int j = 0; j < hiddenLayer1.size(); j++)
+				{
+					outputLayer[i].setInput(j + 1, hiddenLayer1[j].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				outputLayer[i].work();
+			}
+
+			output = outputToNumber();
 
 		}
 
-		if (hiddenLayersNumber > 2)
-		{
 
+
+		if (hiddenLayersNumber == 2)
+		{
+			for (int j = 0; j < hiddenLayer1.size(); j++)
+			{
+				for (int i = 0; i < inputLayer.size(); i++)
+				{
+					hiddenLayer1[j].setInput(i + 1, inputLayer[i].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < hiddenLayer1.size(); i++)
+			{
+				hiddenLayer1[i].work();
+			}
+
+			for (int j = 0; j < hiddenLayer2.size(); j++)
+			{
+				for (int i = 0; i < hiddenLayer1.size(); i++)
+				{
+					hiddenLayer2[j].setInput(i + 1, hiddenLayer1[i].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < hiddenLayer2.size(); i++)
+			{
+				hiddenLayer2[i].work();
+			}
+
+
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				for (int j = 0; j < hiddenLayer2.size(); j++)
+				{
+					outputLayer[i].setInput(j + 1, hiddenLayer2[j].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				outputLayer[i].work();
+			}
+
+			output = outputToNumber();
+
+		}
+
+		if (hiddenLayersNumber == 3)
+		{
+			for (int j = 0; j < hiddenLayer1.size(); j++)
+			{
+				for (int i = 0; i < inputLayer.size(); i++)
+				{
+					hiddenLayer1[j].setInput(i + 1, inputLayer[i].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < hiddenLayer1.size(); i++)
+			{
+				hiddenLayer1[i].work();
+			}
+
+			for (int j = 0; j < hiddenLayer2.size(); j++)
+			{
+				for (int i = 0; i < hiddenLayer1.size(); i++)
+				{
+					hiddenLayer2[j].setInput(i + 1, hiddenLayer1[i].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < hiddenLayer2.size(); i++)
+			{
+				hiddenLayer2[i].work();
+			}
+
+			for (int j = 0; j < hiddenLayer3.size(); j++)
+			{
+				for (int i = 0; i < hiddenLayer2.size(); i++)
+				{
+					hiddenLayer3[j].setInput(i + 1, hiddenLayer2[i].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < hiddenLayer3.size(); i++)
+			{
+				hiddenLayer3[i].work();
+			}
+
+
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				for (int j = 0; j < hiddenLayer3.size(); j++)
+				{
+					outputLayer[i].setInput(j + 1, hiddenLayer3[j].getOutputValue());
+				}
+			}
+
+			for (int i = 0; i < outputLayer.size(); i++)
+			{
+				outputLayer[i].work();
+			}
+
+			output = outputToNumber();
 		}
 
 
@@ -317,7 +451,7 @@ public:
 			else
 				temp.push_back(-0.95);
 		}
-		
+
 		temp.push_back(0.95);
 
 		for (int i = 0; i < 9 - number; i++)
@@ -329,7 +463,7 @@ public:
 					temp.push_back(-0.95);
 			}
 		}
-			
+
 		return temp;
 	}
 
@@ -346,7 +480,7 @@ public:
 			str += inputLayer[i].toString();
 		}
 		str += "outputLayer\n";
-		str += to_string(outputLayer.size())+ "\n";
+		str += to_string(outputLayer.size()) + "\n";
 		for (int i = 0; i < outputLayer.size(); i++) {
 			str += outputLayer[i].toString();
 		}
@@ -386,36 +520,33 @@ public:
 			for (int i = 0; i < hiddenLayer3.size(); i++) {
 				str += hiddenLayer3[i].toString();
 			}
-			
+
 		}
 		return str;
 	}
 
 	static NeuralNetwork fromString(string str) {
-		int index = str.find("inputLayer\n") + 11;
-		int input_layer_size = stoi(str.substr(index, str.find("\n", index)));
-		index = str.find("\n", index);
-		str = str.substr(index+1, str.length());
+		int index = str.find_first_of("inputLayer\n") + 12;
+		int input_layer_size = stoi(str.substr(index, str.find_first_of("\n", index)));
+		str = str.substr(str.find_first_of("\n"), str.length());
 		vector<Neuron> input_layer;
 		for (int i = 0; i < input_layer_size; i++) {
 			Neuron n = Neuron::fromString(str);
 			input_layer.push_back(n);
 		}
-		index = str.find("outputLayer\n") + 12;
-		int output_layer_size = stoi(str.substr(index, str.find("\n", index)));
-		index = str.find("\n", index);
-		str = str.substr(index + 1, str.length());
+		index = str.find_first_of("outputLayer\n") + 13;
+		int output_layer_size = stoi(str.substr(index, str.find_first_of("\n", index)));
+		str = str.substr(str.find_first_of("\n"), str.length());
 		vector<Neuron> output_layer;
 		for (int i = 0; i < output_layer_size; i++) {
 			Neuron n = Neuron::fromString(str);
 			output_layer.push_back(n);
 		}
-		int hidden_layers_number = stoi(str.substr(0, str.find("\n")));
+		int hidden_layers_number = stoi(str.substr(0, str.find_first_of("\n")));
 		if (hidden_layers_number == 1) {
-			index = str.find("hiddenLayer1\n") + 13;
-			int hidden_layer_1_size = stoi(str.substr(index, str.find("\n", index)));
-			index = str.find("\n", index);
-			str = str.substr(index + 1, str.length());
+			index = str.find_first_of("hiddenLayer1\n") + 14;
+			int hidden_layer_1_size = stoi(str.substr(index, str.find_first_of("\n", index)));
+			str = str.substr(str.find_first_of("\n"), str.length());
 			vector<Neuron> hidden_layer_1;
 			for (int i = 0; i < hidden_layer_1_size; i++) {
 				Neuron n = Neuron::fromString(str);
@@ -424,49 +555,44 @@ public:
 			return NeuralNetwork(input_layer, hidden_layer_1, output_layer);
 		}
 		else if (hidden_layers_number == 2) {
-			index = str.find("hiddenLayer1\n") + 13;
-			int hidden_layer_1_size = stoi(str.substr(index, str.find("\n", index)));
-			index = str.find("\n", index);
-			str = str.substr(index + 1, str.length());
+			index = str.find_first_of("hiddenLayer1\n") + 14;
+			int hidden_layer_1_size = stoi(str.substr(index, str.find_first_of("\n", index)));
+			str = str.substr(str.find_first_of("\n"), str.length());
 			vector<Neuron> hidden_layer_1;
 			for (int i = 0; i < hidden_layer_1_size; i++) {
 				Neuron n = Neuron::fromString(str);
 				hidden_layer_1.push_back(n);
 			}
-			index = str.find("hiddenLayer2\n") + 13;
-			int hidden_layer_2_size = stoi(str.substr(index, str.find("\n", index)));
-			index = str.find("\n", index);
-			str = str.substr(index + 1, str.length());
+			index = str.find_first_of("hiddenLayer2\n") + 14;
+			int hidden_layer_2_size = stoi(str.substr(index, str.find_first_of("\n", index)));
+			str = str.substr(str.find_first_of("\n"), str.length());
 			vector<Neuron> hidden_layer_2;
 			for (int i = 0; i < hidden_layer_2_size; i++) {
 				Neuron n = Neuron::fromString(str);
 				hidden_layer_2.push_back(n);
 			}
-			return NeuralNetwork(input_layer, hidden_layer_1,hidden_layer_2, output_layer);
+			return NeuralNetwork(input_layer, hidden_layer_1, hidden_layer_2, output_layer);
 		}
 		else {
-			index = str.find("hiddenLayer1\n") + 13;
-			int hidden_layer_1_size = stoi(str.substr(index, str.find("\n", index)));
-			index = str.find("\n", index);
-			str = str.substr(index + 1, str.length());
+			index = str.find_first_of("hiddenLayer1\n") + 14;
+			int hidden_layer_1_size = stoi(str.substr(index, str.find_first_of("\n", index)));
+			str = str.substr(str.find_first_of("\n"), str.length());
 			vector<Neuron> hidden_layer_1;
 			for (int i = 0; i < hidden_layer_1_size; i++) {
 				Neuron n = Neuron::fromString(str);
 				hidden_layer_1.push_back(n);
 			}
-			index = str.find("hiddenLayer2\n") + 13;
-			int hidden_layer_2_size = stoi(str.substr(index, str.find("\n", index)));
-			index = str.find("\n", index);
-			str = str.substr(index + 1, str.length());
+			index = str.find_first_of("hiddenLayer2\n") + 14;
+			int hidden_layer_2_size = stoi(str.substr(index, str.find_first_of("\n", index)));
+			str = str.substr(str.find_first_of("\n"), str.length());
 			vector<Neuron> hidden_layer_2;
 			for (int i = 0; i < hidden_layer_2_size; i++) {
 				Neuron n = Neuron::fromString(str);
 				hidden_layer_2.push_back(n);
 			}
-			index = str.find("hiddenLayer3\n") + 13;
-			int hidden_layer_3_size = stoi(str.substr(index, str.find("\n", index)));
-			index = str.find("\n", index);
-			str = str.substr(index + 1, str.length());
+			index = str.find_first_of("hiddenLayer3\n") + 14;
+			int hidden_layer_3_size = stoi(str.substr(index, str.find_first_of("\n", index)));
+			str = str.substr(str.find_first_of("\n"), str.length());
 			vector<Neuron> hidden_layer_3;
 			for (int i = 0; i < hidden_layer_3_size; i++) {
 				Neuron n = Neuron::fromString(str);
@@ -474,7 +600,7 @@ public:
 			}
 			return NeuralNetwork(input_layer, hidden_layer_1, hidden_layer_2, output_layer);
 		}
-		
+
 	}
 
 };

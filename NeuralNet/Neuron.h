@@ -355,6 +355,11 @@ public:
 		return outputValue;
 	}
 
+	void setInput(int index, double value)
+	{
+		inputVector[index].setInputSignal(value);
+	}
+
 	string toString() {
 		string str = "Input\n";
 		str += to_string(inputVector.size())+ "\n";

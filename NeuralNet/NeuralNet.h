@@ -484,21 +484,21 @@ public:
 		for (int i = 0; i < number; i++)
 		{
 			if (activationType == ActivationType::unipolarEdge || activationType == ActivationType::unipolarSigmoidal)
-				temp.push_back(0.05);
+				temp.push_back(0.00);
 			else
-				temp.push_back(-0.95);
+				temp.push_back(-1.0);
 		}
 
-		temp.push_back(0.95);
+		temp.push_back(1.0);
 
 		for (int i = 0; i < 9 - number; i++)
 		{
-			{
+			
 				if (activationType == ActivationType::unipolarEdge || activationType == ActivationType::unipolarSigmoidal)
-					temp.push_back(0.05);
+					temp.push_back(0.00);
 				else
-					temp.push_back(-0.95);
-			}
+					temp.push_back(-1.0);
+
 		}
 
 		return temp;

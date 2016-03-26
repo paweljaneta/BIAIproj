@@ -10,7 +10,7 @@
 
 using namespace std;
 
-static double beta = 0.5;
+static double beta = 0.7;
 
 template <typename ActivationType>
 constexpr auto to_underlying(ActivationType e) noexcept

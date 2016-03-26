@@ -6,6 +6,7 @@
 #include "ActivationTypes.h"
 #include <Windows.h>
 #include <string>
+#include <fstream>
 
 using namespace std;
 
@@ -88,7 +89,7 @@ int main() {
 	} catch(runtime_error e){
 		cout << e.what() << endl;
 	}
-	ImageSet set = reader.get_images(5000);
+	ImageSet set = reader.get_images(60000);
 	//for (int i = 0; i < 20; i++) {
 	//	string name = "Wynik" + to_string(i);
 	//	name += ".bmp";
@@ -97,26 +98,80 @@ int main() {
 
 	cout << "Set read" << endl;
 
-	NeuralNetwork siec(784, 1, 89, 10, ActivationType::unipolarSigmoidal, 0.4);
+	fstream file1,file2,file3;
+
+	file1.open("178_neurons.txt", ios::out);
+	file2.open("267_neurons.txt",ios::out);
+	file3.open("356_neurons.txt", ios::out);
+
+	//NeuralNetwork siec(784, 1, 89, 10, ActivationType::unipolarSigmoidal, 0.2);
 	
-	int previousErrors=0;
+	NeuralNetwork siec1(784, 1, 174, 10, ActivationType::unipolarSigmoidal, 0.2);
+	NeuralNetwork siec2(784, 1, 267, 10, ActivationType::unipolarSigmoidal, 0.2);
+	NeuralNetwork siec3(784, 1, 356, 10, ActivationType::unipolarSigmoidal, 0.2);
+
+	long int previousErrors=0;
+
+	//for (int i = 0; i < set.get_list_count(); i++)
+	//{
+	//	siec.learnRow(set.get_image_from_list(i));
+		
+	//	if ((i % 100) == 0)
+	//	{
+	//		cout << (double)i*100.0 / (double)set.get_list_count() << " %		e: " << (double)siec.getErrors()*100.0 / (double)(i + 1) << " %		ce: " << (double)(siec.getErrors()-previousErrors)*100.0 / 100.0<<" %" << endl;
+	//		previousErrors = siec.getErrors();
+	//	}
+			
+	//}
 
 	for (int i = 0; i < set.get_list_count(); i++)
 	{
-		siec.learnRow(set.get_image_from_list(i));
-		
+		siec1.learnRow(set.get_image_from_list(i));
+
 		if ((i % 100) == 0)
 		{
-			cout << (double)i*100.0 / (double)set.get_list_count() << " %		e: " << (double)siec.getErrors()*100.0 / (double)(i + 1) << " %		ce: " << (double)(siec.getErrors()-previousErrors)*100.0 / 100.0<<" %" << endl;
-			previousErrors = siec.getErrors();
+			cout << (double)i*100.0 / (double)set.get_list_count() << " %		e: " << (double)siec1.getErrors()*100.0 / (double)(i + 1) << " %		ce: " << (double)(siec1.getErrors()-previousErrors)*100.0 / 100.0<<" %" << endl;
+			file1<< (double)i*100.0 / (double)set.get_list_count() << " %		e: " << (double)siec1.getErrors()*100.0 / (double)(i + 1) << " %		ce: " << (double)(siec1.getErrors() - previousErrors)*100.0 / 100.0 << " %" << endl;
+			previousErrors = siec1.getErrors();
 		}
-			
+
+	}
+
+	for (int i = 0; i < set.get_list_count(); i++)
+	{
+		siec2.learnRow(set.get_image_from_list(i));
+
+		if ((i % 100) == 0)
+		{
+			cout << (double)i*100.0 / (double)set.get_list_count() << " %		e: " << (double)siec2.getErrors()*100.0 / (double)(i + 1) << " %		ce: " << (double)(siec2.getErrors() - previousErrors)*100.0 / 100.0 << " %" << endl;
+			file2 << (double)i*100.0 / (double)set.get_list_count() << " %		e: " << (double)siec2.getErrors()*100.0 / (double)(i + 1) << " %		ce: " << (double)(siec2.getErrors() - previousErrors)*100.0 / 100.0 << " %" << endl;
+			previousErrors = siec2.getErrors();
+		}
+
+	}
+
+	for (int i = 0; i < set.get_list_count(); i++)
+	{
+		siec3.learnRow(set.get_image_from_list(i));
+
+		if ((i % 100) == 0)
+		{
+			cout << (double)i*100.0 / (double)set.get_list_count() << " %		e: " << (double)siec3.getErrors()*100.0 / (double)(i + 1) << " %		ce: " << (double)(siec3.getErrors() - previousErrors)*100.0 / 100.0 << " %" << endl;
+			file3 << (double)i*100.0 / (double)set.get_list_count() << " %		e: " << (double)siec3.getErrors()*100.0 / (double)(i + 1) << " %		ce: " << (double)(siec3.getErrors() - previousErrors)*100.0 / 100.0 << " %" << endl;
+			previousErrors = siec3.getErrors();
+		}
+
 	}
 
 	//reader.write_neural_network_to_file(siec);
 	//siec = reader.read_neural_network_from_file();
 
+	file1.close();
+	file2.close();
+	file3.close();
+
 	cout << "test" << endl;
 	system("pause");
 	return 0;
+
 }

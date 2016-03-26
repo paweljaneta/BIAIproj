@@ -88,17 +88,33 @@ int main() {
 	} catch(runtime_error e){
 		cout << e.what() << endl;
 	}
-	ImageSet set = reader.get_images(10);
+	ImageSet set = reader.get_images(5000);
 	//for (int i = 0; i < 20; i++) {
 	//	string name = "Wynik" + to_string(i);
 	//	name += ".bmp";
 	//	SaveBMP(reader.get_buffer(i), 28, 28, 0, convertCharArrayToLPCWSTR(name.c_str()));
 	//}
 
-	NeuralNetwork siec(784, 1, 89, 10, ActivationType::unipolarSigmoidal, 0.7);
+	cout << "Set read" << endl;
+
+	NeuralNetwork siec(784, 1, 89, 10, ActivationType::unipolarSigmoidal, 0.4);
 	
-	reader.write_neural_network_to_file(siec);
-	siec = reader.read_neural_network_from_file();
+	int previousErrors=0;
+
+	for (int i = 0; i < set.get_list_count(); i++)
+	{
+		siec.learnRow(set.get_image_from_list(i));
+		
+		if ((i % 100) == 0)
+		{
+			cout << (double)i*100.0 / (double)set.get_list_count() << " %		e: " << (double)siec.getErrors()*100.0 / (double)(i + 1) << " %		ce: " << (double)(siec.getErrors()-previousErrors)*100.0 / 100.0<<" %" << endl;
+			previousErrors = siec.getErrors();
+		}
+			
+	}
+
+	//reader.write_neural_network_to_file(siec);
+	//siec = reader.read_neural_network_from_file();
 
 	cout << "test" << endl;
 	system("pause");

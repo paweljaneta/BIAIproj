@@ -10,6 +10,8 @@
 
 using namespace std;
 
+static double beta = 0.5;
+
 template <typename ActivationType>
 constexpr auto to_underlying(ActivationType e) noexcept
 {
@@ -27,7 +29,11 @@ public:
 	Input()
 	{
 		//srand(clock());
-		inputWeight= (((rand() % 1000000L) / 1700.0) - 9.8)*0.0015;
+
+		inputWeight = 0.0;
+
+		while (inputWeight==0)
+			inputWeight = (((rand() % 10000) / 1700.0) - 9.8)*0.0015;
 	}
 
 	Input(double signal)
@@ -35,7 +41,10 @@ public:
 		inputSignal = signal;
 
 		//srand(clock());
-		inputWeight = (((rand() % 1000000L) / 1700.0) - 9.8)*0.0015;
+
+		inputWeight = 0.0;
+		while (inputWeight == 0)
+			inputWeight = (((rand() % 10000) / 1700.0) - 9.8)*0.0015;
 	}
 
 	Input(double signal, double weight)
@@ -159,12 +168,12 @@ private:
 
 	void unipolarSigmoidalActivation()
 	{
-		outputValue = 1.0 / (1.0 + exp(-learnSpeed*sum));
+		outputValue = 1.0 / (1.0 + exp(-beta*sum));
 	}
 
 	void bipolarSigmoidalActivation()
 	{
-		outputValue = 2.0 / (1.0 + exp(-learnSpeed*sum)) - 1.0;
+		outputValue = 2.0 / (1.0 + exp(-beta*sum)) - 1.0;
 	}
 
 	void tanhActivation()

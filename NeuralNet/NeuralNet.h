@@ -26,6 +26,8 @@ private:
 
 	ActivationType activationType;
 
+	long int errors;
+
 public:
 
 	NeuralNetwork(int inputNeuronsNumber, int numberOfInputs, int outputNeuronsNumber, ActivationType actType, double learnRatio)
@@ -53,6 +55,7 @@ public:
 		}
 		hiddenLayersNumber = 0;
 		activationType = actType;
+		errors = 0;
 	}
 
 	NeuralNetwork(int inputNeuronsNumber, int numberOfInputs, int hiddenLayer1NeuronsNumber, int outputNeuronsNumber, ActivationType actType, double learnRatio)
@@ -93,6 +96,7 @@ public:
 		}
 		hiddenLayersNumber = 1;
 		activationType = actType;
+		errors = 0;
 	}
 
 	NeuralNetwork(int inputNeuronsNumber, int numberOfInputs, int hiddenLayer1NeuronsNumber, int hiddenLayer2NeuronsNumber, int outputNeuronsNumber, ActivationType actType, double learnRatio)
@@ -144,6 +148,7 @@ public:
 
 		hiddenLayersNumber = 2;
 		activationType = actType;
+		errors = 0;
 	}
 
 	NeuralNetwork(int inputNeuronsNumber, int numberOfInputs, int hiddenLayer1NeuronsNumber, int hiddenLayer2NeuronsNumber, int hiddenLayer3NeuronsNumber, int outputNeuronsNumber, ActivationType actType, double learnRatio)
@@ -205,6 +210,7 @@ public:
 		}
 		hiddenLayersNumber = 3;
 		activationType = actType;
+		errors = 0;
 	}
 
 	NeuralNetwork(vector<Neuron> inputLayer, vector<Neuron> outputLayer)
@@ -213,6 +219,7 @@ public:
 		hiddenLayersNumber = 0;
 		this->inputLayer = inputLayer;
 		this->outputLayer = outputLayer;
+		errors = 0;
 	}
 
 	NeuralNetwork(vector<Neuron> inputLayer, vector<Neuron> hiddenLayer1, vector<Neuron> outputLayer)
@@ -221,6 +228,7 @@ public:
 		this->inputLayer = inputLayer;
 		this->hiddenLayer1 = hiddenLayer1;
 		this->outputLayer = outputLayer;
+		errors = 0;
 	}
 
 	NeuralNetwork(vector<Neuron> inputLayer, vector<Neuron> hiddenLayer1, vector<Neuron> hiddenLayer2, vector<Neuron> outputLayer)
@@ -230,6 +238,7 @@ public:
 		this->hiddenLayer1 = hiddenLayer1;
 		this->hiddenLayer2 = hiddenLayer2;
 		this->outputLayer = outputLayer;
+		errors = 0;
 	}
 
 	NeuralNetwork(vector<Neuron> inputLayer, vector<Neuron> hiddenLayer1, vector<Neuron> hiddenLayer2, vector<Neuron> hiddenLayer3, vector<Neuron> outputLayer)
@@ -241,6 +250,7 @@ public:
 		this->hiddenLayer2 = hiddenLayer2;
 		this->hiddenLayer3 = hiddenLayer3;
 		this->outputLayer = outputLayer;
+		errors = 0;
 	}
 
 	~NeuralNetwork()
@@ -250,6 +260,7 @@ public:
 
 	int outputToNumber()
 	{
+		/*
 		if (outputLayer[0].getOutputValue() >= outputTreshold)
 			return 0;
 		else if (outputLayer[1].getOutputValue() >= outputTreshold)
@@ -272,6 +283,21 @@ public:
 			return 9;
 		else
 			return -1;
+			*/
+
+		int index = 0;
+		double maxVal = outputLayer[0].getOutputValue();
+
+		for (int i = 1; i < outputLayer.size(); i++)
+		{
+			if (outputLayer[i].getOutputValue()>maxVal)
+			{
+				index = i;
+				maxVal = outputLayer[i].getOutputValue();
+			}
+		}
+
+		return index;
 	}
 
 	void work(Image inputImage)
@@ -480,8 +506,67 @@ public:
 
 	void learnRow(Image inputImage)
 	{
+		int expectedResult = inputImage.get_digit();
+		vector<double> expectedVector = numberToOutput(expectedResult);
+
+		work(inputImage);
+
+		if (expectedResult != output)
+			errors++;
+
+
+		for (int i = 0; i < outputLayer.size(); i++)
+		{
+			outputLayer[i].setDelta(expectedVector[i]-outputLayer[i].getOutputValue());
+		}
+
+
+		for (int i = 0; i < hiddenLayer1.size(); i++)
+		{
+			double sum = 0.0;
+
+			for (int j = 0; j < outputLayer.size(); j++)
+			{
+				sum += outputLayer[j].getDeltaMulWeight(i + 1);
+			}
+
+			hiddenLayer1[i].setDelta(sum);
+		}
+
+		for (int i = 0; i < inputLayer.size(); i++)
+		{
+			double sum = 0.0;
+
+			for (int j = 0; j < hiddenLayer1.size(); j++)
+			{
+				sum += hiddenLayer1[j].getDeltaMulWeight(i + 1);
+			}
+
+			inputLayer[i].setDelta(sum);
+		}
+
+		for (int i = 0; i < inputLayer.size(); i++)
+		{
+			inputLayer[i].updateWeights();
+		}
+
+		for (int i = 0; i < hiddenLayer1.size(); i++)
+		{
+			hiddenLayer1[i].updateWeights();
+		}
+
+		for (int i = 0; i < outputLayer.size(); i++)
+		{
+			outputLayer[i].updateWeights();
+		}
 
 	}
+
+	long int getErrors()
+	{
+		return errors;
+	}
+
 
 	string toString() {
 		string str = "NeuralNetwork\n";

@@ -81,15 +81,27 @@ bool SaveBMP(uchar * buffer, int width, int height, long paddedsize, LPCTSTR bmp
 	return true;
 }
 
+int getRandom(int *hVector, int listCount, int currentRepeat);
+
+
 int main() {
 	MINSTFileReader reader = MINSTFileReader();
 	try {
 		reader.read_mnist_labels();
 		reader.read_mnist_images();
-	} catch(runtime_error e){
+	}
+	catch (runtime_error e) {
 		cout << e.what() << endl;
 	}
 	ImageSet set = reader.get_images(60000);
+
+	int hashVector[60000];
+
+	for (int i = 0; i < set.get_list_count(); i++)
+	{
+		hashVector[i] = 0;
+	}
+
 	//for (int i = 0; i < 20; i++) {
 	//	string name = "Wynik" + to_string(i);
 	//	name += ".bmp";
@@ -98,32 +110,32 @@ int main() {
 
 	cout << "Set read" << endl;
 
-	fstream file1,file2,file3;
+	fstream file1, file2, file3;
 
-	file1.open("178_neurons.txt", ios::out);
-	file2.open("267_neurons.txt",ios::out);
-	file3.open("356_neurons.txt", ios::out);
+	//file1.open("356_decreasing_learn_speed_2x_neurons.txt", ios::out);
+	//file2.open("267_decreasing_learn_speed_neurons.txt",ios::out);
+	file3.open("356_decreasing_learn_speed_2x_random_neurons.txt", ios::out);
 
 	//NeuralNetwork siec(784, 1, 89, 10, ActivationType::unipolarSigmoidal, 0.2);
-	
-	NeuralNetwork siec1(784, 1, 174, 10, ActivationType::unipolarSigmoidal, 0.2);
-	NeuralNetwork siec2(784, 1, 267, 10, ActivationType::unipolarSigmoidal, 0.2);
-	NeuralNetwork siec3(784, 1, 356, 10, ActivationType::unipolarSigmoidal, 0.2);
 
-	long int previousErrors=0;
+	//NeuralNetwork siec1(784, 1, 178, 10, ActivationType::unipolarSigmoidal, 0.7);
+	//NeuralNetwork siec2(784, 1, 267, 10, ActivationType::unipolarSigmoidal, 0.7);
+	NeuralNetwork siec3(784, 1, 356, 10, ActivationType::unipolarSigmoidal, 0.7);
+
+	long int previousErrors = 0;
 
 	//for (int i = 0; i < set.get_list_count(); i++)
 	//{
 	//	siec.learnRow(set.get_image_from_list(i));
-		
+
 	//	if ((i % 100) == 0)
 	//	{
 	//		cout << (double)i*100.0 / (double)set.get_list_count() << " %		e: " << (double)siec.getErrors()*100.0 / (double)(i + 1) << " %		ce: " << (double)(siec.getErrors()-previousErrors)*100.0 / 100.0<<" %" << endl;
 	//		previousErrors = siec.getErrors();
 	//	}
-			
-	//}
 
+	//}
+	/*
 	for (int i = 0; i < set.get_list_count(); i++)
 	{
 		siec1.learnRow(set.get_image_from_list(i));
@@ -149,10 +161,23 @@ int main() {
 		}
 
 	}
+	*/
+	for (int i = 0; i < set.get_list_count(); i++)
+	{
+		siec3.learnRow(set.get_image_from_list(getRandom(hashVector, set.get_list_count(), 0)));
+
+		if ((i % 100) == 0)
+		{
+			cout << (double)i*100.0 / (double)set.get_list_count() << " %		e: " << (double)siec3.getErrors()*100.0 / (double)(i + 1) << " %		ce: " << (double)(siec3.getErrors() - previousErrors)*100.0 / 100.0 << " %" << endl;
+			file3 << (double)i*100.0 / (double)set.get_list_count() << " %		e: " << (double)siec3.getErrors()*100.0 / (double)(i + 1) << " %		ce: " << (double)(siec3.getErrors() - previousErrors)*100.0 / 100.0 << " %" << endl;
+			previousErrors = siec3.getErrors();
+		}
+
+	}
 
 	for (int i = 0; i < set.get_list_count(); i++)
 	{
-		siec3.learnRow(set.get_image_from_list(i));
+		siec3.learnRow(set.get_image_from_list(getRandom(hashVector, set.get_list_count(), 1)));
 
 		if ((i % 100) == 0)
 		{
@@ -166,12 +191,35 @@ int main() {
 	//reader.write_neural_network_to_file(siec);
 	//siec = reader.read_neural_network_from_file();
 
-	file1.close();
-	file2.close();
+	//file1.close();
+	//file2.close();
 	file3.close();
 
 	cout << "test" << endl;
 	system("pause");
 	return 0;
 
+}
+
+int getRandom(int *hVector, int listCount, int currentRepeat)
+{
+	int result;
+	int multiplier;
+
+	multiplier = rand() % 11 ;
+
+	result = (rand()%600+1) *multiplier;
+
+	result = result % listCount;
+
+	while (hVector[result] != currentRepeat)
+	{
+		multiplier = rand() % 11;
+		result = (rand() % 600+1) *multiplier;
+		result = result % listCount;
+	}
+
+	hVector[result]++;
+
+	return result;
 }

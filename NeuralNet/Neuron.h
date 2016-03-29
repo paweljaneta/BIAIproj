@@ -295,6 +295,9 @@ private:
 			tanhUpdate();
 			break;
 		}
+		learnSpeed -= 0.00001165;
+		if (learnSpeed < 0.001)
+			learnSpeed = 0.001;
 	}
 public:
 

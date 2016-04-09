@@ -93,7 +93,7 @@ int main() {
 	catch (runtime_error e) {
 		cout << e.what() << endl;
 	}
-	ImageSet set = reader.get_images(60000);
+	ImageSet set = reader.get_images(40000);
 
 	int hashVector[60000];
 
@@ -174,7 +174,7 @@ int main() {
 		}
 
 	}
-
+/*
 	for (int i = 0; i < set.get_list_count(); i++)
 	{
 		siec3.learnRow(set.get_image_from_list(getRandom(hashVector, set.get_list_count(), 1)));
@@ -187,7 +187,7 @@ int main() {
 		}
 
 	}
-
+	*/
 	//reader.write_neural_network_to_file(siec);
 	//siec = reader.read_neural_network_from_file();
 
@@ -204,19 +204,20 @@ int main() {
 int getRandom(int *hVector, int listCount, int currentRepeat)
 {
 	int result;
-	int multiplier;
+	int range;
 
-	multiplier = rand() % 11 ;
+	range = rand() % 2 ;
 
-	result = (rand()%600+1) *multiplier;
+	result = rand()%listCount+range*32767;
 
 	result = result % listCount;
 
 	while (hVector[result] != currentRepeat)
 	{
-		multiplier = rand() % 11;
-		result = (rand() % 600+1) *multiplier;
+		range = rand() % 2;
+		result = rand() % listCount + range*32767;
 		result = result % listCount;
+		
 	}
 
 	hVector[result]++;

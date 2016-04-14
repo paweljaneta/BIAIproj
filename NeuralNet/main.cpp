@@ -86,14 +86,18 @@ int getRandom(int *hVector, int listCount, int currentRepeat);
 
 int main() {
 	MINSTFileReader reader = MINSTFileReader();
+	MINSTFileReader test_images_reader = MINSTFileReader("\\resources\\t10k-labels.idx1-ubyte","\\resources\\t10k-images.idx3-ubyte");
 	try {
 		reader.read_mnist_labels();
 		reader.read_mnist_images();
+		test_images_reader.read_mnist_labels();
+		test_images_reader.read_mnist_images();
 	}
 	catch (runtime_error e) {
 		cout << e.what() << endl;
 	}
 	ImageSet set = reader.get_images(40000);
+	ImageSet test_set = reader.get_images();
 
 	int hashVector[60000];
 
@@ -165,6 +169,20 @@ int main() {
 	for (int i = 0; i < set.get_list_count(); i++)
 	{
 		siec3.learnRow(set.get_image_from_list(getRandom(hashVector, set.get_list_count(), 0)));
+
+		if ((i % 100) == 0)
+		{
+			cout << (double)i*100.0 / (double)set.get_list_count() << " %		e: " << (double)siec3.getErrors()*100.0 / (double)(i + 1) << " %		ce: " << (double)(siec3.getErrors() - previousErrors)*100.0 / 100.0 << " %" << endl;
+			file3 << (double)i*100.0 / (double)set.get_list_count() << " %		e: " << (double)siec3.getErrors()*100.0 / (double)(i + 1) << " %		ce: " << (double)(siec3.getErrors() - previousErrors)*100.0 / 100.0 << " %" << endl;
+			previousErrors = siec3.getErrors();
+		}
+
+	}
+	file3 << "test results: " << endl;
+	siec3.resetErrors();
+	for (int i = 0; i < test_set.get_list_count(); i++)
+	{
+		siec3.workWithTestSet(test_set.get_image_from_list(i));
 
 		if ((i % 100) == 0)
 		{

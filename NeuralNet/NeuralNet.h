@@ -567,6 +567,16 @@ public:
 		return errors;
 	}
 
+	void resetErrors() {
+		this->errors = 0;
+	}
+
+	void workWithTestSet(Image inputImage) {
+		int expectedResult = inputImage.get_digit();
+		work(inputImage);
+		if (expectedResult != output)
+			errors++;
+	}
 
 	string toString() {
 		string str = "NeuralNetwork\n";
